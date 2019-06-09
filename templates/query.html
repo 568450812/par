@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>根据地址查询经纬度</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="/static/js/jquery-1.11.3.js"></script>
+    <script>
+        $(function(){
+            $("#btn").click(function(){
+                console.log("111111");
+                $.ajax({
+                    url:"/server01",
+                    dataType:"json",
+                    type:"get",
+                    data:"place=" + $("#text_").val(),
+                    success:function(data){
+                        console.log(data);
+                         var value = "";
+                         for(var i=0;i<data.length;i++){
+                             value += "<span class='p1' style='font-size: 30px'>";
+                             value += "<span style='display: none' class='lat'>";
+                             value += data[i].location.lat;
+                             value += "</span>";
+                             value += "<span style='display: none' class='lng'>";
+                             value += data[i].location.lng;
+                             value += "</span>";
+                             value += data[i].name;
+                             value += "</span>";
+                             value += "<p>";
+                             value += data[i].address;
+                             value += "</p>";
+                         };
+                         $("#container").empty();
+                         $("#container").append(value);
+                         $(".p1").bind("click",(function () {
+                    $.ajax({
+                        url:"/server02",
+                        dataType:"json",
+                        type:"get",
+                        data:"lat="+$(this).find(".lat").html() + "&lng=" + $(this).find(".lng").html(),
+                        success:function (data) {
+                            var value = "";
+                            for(var i=0;i<data.length;i++){
+                                value += "<h2 class='p2'>";
+                                value += data[i].name;
+                                value += "</h2>";
+                                value += "<p>";
+                                value += "地址"+data[i].address;
+                                value +="</p>";
+                                value += "<p>";
+                                value += "距离"+data[i].distance+"米";
+                                value +="</p>";
+                                value += "<p>";
+                                value += "预计花费时间"+data[i].duration+"秒";
+                                value +="</p>";
+                            }
+                            $("#container").empty();
+                            $("#container").append(value);
+                        }
+                    })
+                })).bind("mouseover",(function () {
+                             $(this).css("cursor","pointer")
+                         }));
+                    }
+                }) ;
+
+            });
+        });
+    </script>
+</head>
+<body style="background:#CBE1FF">
+    <div style="width:730px;margin:auto;">   
+        要查询的地址：<input id="text_" type="text" value="西安" style="margin-right:100px;"/>
+        <button id="btn">查询</button>
+        <div id="container" 
+            style="position: absolute;
+                margin-top:30px; 
+                width: 730px;
+                top: 50px;
+                border: 1px solid gray;
+                overflow:hidden;">
+        </div>
+    </div>
+</body>
+</html>
